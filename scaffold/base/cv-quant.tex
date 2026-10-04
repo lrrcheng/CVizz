@@ -1,0 +1,54 @@
+% Master quant CV. Layout: templates/cv.cls. Section order follows tracks/quant.md.
+% Replace the example content with your own, or ask Claude to build it from your profile.
+% End every bullet with "% src: <entry-id>#F<n>".
+\documentclass{cv}
+
+\cvname{{{NAME}}}
+\cvlocation{{{CITY}}}
+\cvemail{{{EMAIL}}}
+\cvphone{{{PHONE}}}{{{PHONE_LINK}}}
+\cvlinkedin{{{LINKEDIN_URL}}}{{{NAME}}}
+
+\begin{document}
+
+\makecvheader
+
+\section{Key Highlights}
+\begin{bullets}
+  \item <Your strongest quantitative project, one line.> % src: example#F1
+\end{bullets}
+
+\section{Education}
+\education{<University>}{<Degree> (<year> of <n> years)}{Aug 2024 -- Present}
+\begin{bullets}
+  \item \textbf{Average grade:} <grade> % src: example#F2
+  \item \textbf{Coursework:} Statistics, <probability / optimisation / ML courses>. % src: example#F3
+\end{bullets}
+
+\section{Experience}
+\entry{<Job title>}{<Organisation>}{<City, Country>}{June 2026 -- Aug 2026}
+\begin{bullets}
+  \item <Quantitative or analytical work, with a concrete detail.> % src: example#F4
+\end{bullets}
+
+\section{Projects}
+\entry{<Modelling or trading project>}{Personal project}{}{2025 -- Present}
+\begin{bullets}
+  \item <Data and models used.> % src: example#F5
+  \item <How you validated it (out-of-sample, bias controls). No best-of-N results.> % src: example#F6
+\end{bullets}
+
+\section{Awards}
+\begin{bullets}
+  \item <Competition, placement, year.> % src: example#F7
+\end{bullets}
+
+\section{Skills \& Other}
+\begin{skilltable}
+  \row{Programming}{Python (pandas, NumPy), C++, SQL (basic)}
+  \row{ML \& data}{PyTorch, scikit-learn}
+  \row{Languages}{<language> (native), English (fluent)}
+  \row{Interests}{<interests>}
+\end{skilltable}
+
+\end{document}

@@ -1,0 +1,17 @@
+# Search tools (ripgrep, used by Claude Code's Grep) skip gitignored files by default.
+# This file takes precedence over .gitignore for search only, so Claude can still find
+# your personal data. Git itself keeps ignoring these paths.
+!/personal/
+!/profile/
+!/tracks/
+!/base/
+!/applications/
+!/companies/
+!/generated/
+!/inbox/
+!/archive/
+!/TODO.md
+!/tracker.md
+!/PROJECT-STATE.md
+!/CV/
+!/[0-9][0-9][0-9][0-9]/

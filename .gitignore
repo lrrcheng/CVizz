@@ -1,0 +1,54 @@
+# ---------------------------------------------------------------------------
+# Personal data: everything about YOU stays local. Only the framework is shared.
+# Recreate the starter versions with: python scripts/init.py
+# personal/ is for your own resources (diplomas, transcripts, old CVs, ...), any subfolders.
+# .ignore re-enables these folders for Claude Code's search tools (git still ignores them).
+# ---------------------------------------------------------------------------
+/profile/
+/tracks/
+/base/
+/applications/
+/companies/
+/generated/
+/inbox/
+/archive/
+/TODO.md
+/tracker.md
+/personal/
+/PROJECT-STATE.md
+
+# Personal folders of earlier CVs and letters (any name you use locally)
+/CV/
+/[0-9][0-9][0-9][0-9]/
+export-*.md
+
+# Documents and personal files anywhere in the repo
+*.pdf
+*.docx
+*.doc
+*.png
+*.jpg
+*.jpeg
+
+# LaTeX build output
+.build/
+*.aux
+*.log
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.out
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Claude Code local settings
+.claude/settings.local.json
+
+# OS / editor
+.DS_Store
+Thumbs.db
+desktop.ini

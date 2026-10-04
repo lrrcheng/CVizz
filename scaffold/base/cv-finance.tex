@@ -1,0 +1,53 @@
+% Master asset-management CV. Layout: templates/cv.cls. Section order follows tracks/asset-management.md.
+% Replace the example content with your own, or ask Claude to build it from your profile.
+% End every bullet with "% src: <entry-id>#F<n>".
+\documentclass{cv}
+
+\cvname{{{NAME}}}
+\cvlocation{{{CITY}}}
+\cvemail{{{EMAIL}}}
+\cvphone{{{PHONE}}}{{{PHONE_LINK}}}
+\cvlinkedin{{{LINKEDIN_URL}}}{{{NAME}}}
+
+\begin{document}
+
+\makecvheader
+
+\section{Key Highlights}
+\begin{bullets}
+  \item <Evidence of genuine interest in markets: investing, pitches, finance projects.> % src: example#F1
+  \item <A business-facing achievement: case competition, startup, stakeholder work.> % src: example#F2
+\end{bullets}
+
+\section{Education}
+\education{<University>}{<Degree> (<year> of <n> years)}{Aug 2024 -- Present}
+\begin{bullets}
+  \item \textbf{Average grade:} <grade> % src: example#F3
+  \item \textbf{Coursework:} <statistics, finance, economics courses>. % src: example#F4
+\end{bullets}
+
+\section{Experience}
+\entry{<Job title>}{<Organisation>}{<City, Country>}{June 2026 -- Aug 2026}
+\begin{bullets}
+  \item <Work that involved analysis, business decisions or stakeholders.> % src: example#F5
+\end{bullets}
+
+\section{Projects}
+\entry{<Investment or analysis project>}{Personal project}{}{2025 -- Present}
+\begin{bullets}
+  \item <What you analysed and what you concluded.> % src: example#F6
+\end{bullets}
+
+\section{Leadership \& Entrepreneurship}
+\begin{bullets}
+  \item \textbf{<Organisation>:} <role and one concrete result>. % src: example#F7
+\end{bullets}
+
+\section{Skills \& Other}
+\begin{skilltable}
+  \row{Programming}{Python (pandas, NumPy), Excel}
+  \row{Languages}{<language> (native), English (fluent)}
+  \row{Interests}{Equity markets and investing, <other interests>}
+\end{skilltable}
+
+\end{document}

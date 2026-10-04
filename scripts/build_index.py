@@ -1,0 +1,237 @@
+"""Build derived indexes from profile/ and tracks/, and search facts by posting phrases.
+
+Usage:
+    python scripts/build_index.py                      # rebuild generated/*.md and lint
+    python scripts/build_index.py --find "PLC" "Kalman filter" "time series"
+
+Generated files (never edit by hand):
+    generated/INDEX.md            one row per experience
+    generated/SKILL-MATRIX.md     tag -> facts that prove it
+    generated/GAPS-<track>.md     required/nice tags of a track vs. evidence
+    generated/OPEN-QUESTIONS.md   every "## Open questions" section, collected
+"""
+
+import re
+import sys
+from collections import defaultdict
+from pathlib import Path
+
+import yaml
+
+sys.stdout.reconfigure(encoding="utf-8")
+
+ROOT = Path(__file__).resolve().parent.parent
+PROFILE = ROOT / "profile"
+EXPERIENCES = PROFILE / "experiences"
+TRACKS = ROOT / "tracks"
+OUT = ROOT / "generated"
+
+FACT_RE = re.compile(
+    r"^- (?P<fid>F\d+) \[(?P<tags>[^\]]*)\] (?P<text>.+?) · "
+    r"(?P<status>verified|stated|unverified)(?: · src: (?P<src>.+))?$"
+)
+STATUS_SHORT = {"verified": "v", "stated": "s", "unverified": "u"}
+DEPTH_ORDER = {"stub": 0, "basic": 1, "deep": 2}
+
+
+def read_frontmatter(path):
+    text = path.read_text(encoding="utf-8")
+    if not text.startswith("---"):
+        return {}, text
+    _, fm, body = text.split("---", 2)
+    try:
+        return yaml.safe_load(fm) or {}, body
+    except yaml.YAMLError as e:
+        sys.exit(f"ERROR: invalid frontmatter in {path.name}: {e}")
+
+
+def load_vocabulary():
+    """Parse the tables in profile/skills.md -> {tag: (synonyms, category)}."""
+    vocab = {}
+    for line in (PROFILE / "skills.md").read_text(encoding="utf-8").splitlines():
+        cells = [c.strip() for c in line.strip().strip("|").split("|")]
+        if len(cells) != 3 or cells[0] in ("Tag", "") or set(cells[0]) <= set("-"):
+            continue
+        tag, synonyms, category = cells
+        vocab[tag] = ([s.strip() for s in synonyms.split(",") if s.strip()], category)
+    return vocab
+
+
+def open_questions(body):
+    match = re.search(r"^## Open questions\s*$(.*?)(?=^## |\Z)", body, re.M | re.S)
+    if not match:
+        return []
+    return [l[2:].strip() for l in match.group(1).splitlines() if l.startswith("- ")]
+
+
+def load_experiences(vocab, problems):
+    experiences, facts = [], []
+    for path in sorted(EXPERIENCES.glob("*.md")):
+        if path.name.startswith("_"):  # templates and drafts are not indexed
+            continue
+        meta, body = read_frontmatter(path)
+        exp_id = meta.get("id", path.stem)
+        if exp_id != path.stem:
+            problems.append(f"{path.name}: id '{exp_id}' does not match filename")
+        seen = set()
+        for line in body.splitlines():
+            if not re.match(r"^- F\d+ ", line):
+                continue
+            m = FACT_RE.match(line)
+            if not m:
+                problems.append(f"{path.name}: malformed fact line: {line[:70]}")
+                continue
+            if m["fid"] in seen:
+                problems.append(f"{path.name}: duplicate fact id {m['fid']}")
+            seen.add(m["fid"])
+            tags = [t.strip() for t in m["tags"].split(",") if t.strip()]
+            for t in tags:
+                if t not in vocab:
+                    problems.append(f"{path.name} {m['fid']}: unknown tag '{t}'")
+            if not m["src"]:
+                problems.append(f"{path.name} {m['fid']}: missing src")
+            facts.append({
+                "ref": f"{exp_id}#{m['fid']}", "exp": exp_id, "tags": tags,
+                "text": m["text"], "status": m["status"], "src": m["src"] or "",
+            })
+        for t in meta.get("skills", []) or []:
+            if t not in vocab:
+                problems.append(f"{path.name}: unknown tag '{t}' in skills frontmatter")
+        if meta.get("depth") not in DEPTH_ORDER:
+            problems.append(f"{path.name}: depth must be one of {list(DEPTH_ORDER)}")
+        experiences.append({"meta": meta, "id": exp_id, "questions": open_questions(body)})
+    return experiences, facts
+
+
+def evidence_by_tag(facts):
+    by_tag = defaultdict(list)
+    for f in facts:
+        for t in f["tags"]:
+            by_tag[t].append(f)
+    return by_tag
+
+
+def strength(tag_facts):
+    usable = [f for f in tag_facts if f["status"] != "unverified"]
+    if len(usable) >= 2:
+        return "✅ strong"
+    if usable or tag_facts:
+        return "⚠️ weak"
+    return "❌ missing"
+
+
+def refs(tag_facts):
+    return ", ".join(f"{f['ref']} ({STATUS_SHORT[f['status']]})" for f in tag_facts) or "—"
+
+
+def write_index(experiences, facts):
+    counts = defaultdict(lambda: defaultdict(int))
+    for f in facts:
+        counts[f["exp"]][f["status"]] += 1
+    rows = sorted(experiences, key=lambda e: str(e["meta"].get("period", "")), reverse=True)
+    lines = [
+        "# Experience index", "",
+        "_Generated by scripts/build_index.py; do not edit._",
+        "Facts column: verified / stated / unverified.", "",
+        "| id | type | title | org | period | depth | facts v/s/u | open Qs |",
+        "|---|---|---|---|---|---|---|---|",
+    ]
+    for e in rows:
+        m, c = e["meta"], counts[e["id"]]
+        lines.append(
+            f"| {e['id']} | {m.get('type','')} | {m.get('title','')} | {m.get('org','')} | "
+            f"{m.get('period','')} | {m.get('depth','')} | "
+            f"{c['verified']}/{c['stated']}/{c['unverified']} | {len(e['questions'])} |"
+        )
+    total = defaultdict(int)
+    for f in facts:
+        total[f["status"]] += 1
+    lines += ["", f"**Totals:** {len(experiences)} entries, {len(facts)} facts "
+              f"({total['verified']} verified, {total['stated']} stated, {total['unverified']} unverified)."]
+    (OUT / "INDEX.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+def write_skill_matrix(vocab, by_tag):
+    lines = ["# Skill matrix", "", "_Generated; do not edit._ (v)=verified (s)=stated (u)=unverified", ""]
+    by_cat = defaultdict(list)
+    for tag, (_, cat) in vocab.items():
+        by_cat[cat].append(tag)
+    for cat, tags in by_cat.items():
+        lines += [f"## {cat}", "", "| tag | strength | evidence |", "|---|---|---|"]
+        lines += [f"| {t} | {strength(by_tag[t])} | {refs(by_tag[t])} |" for t in tags]
+        lines.append("")
+    (OUT / "SKILL-MATRIX.md").write_text("\n".join(lines), encoding="utf-8")
+
+
+def write_gaps(by_tag, problems):
+    for path in sorted(TRACKS.glob("*.md")):
+        meta, _ = read_frontmatter(path)
+        name = meta.get("track", path.stem)
+        lines = [f"# Gaps for track: {name}", "", "_Generated; do not edit._", ""]
+        for kind in ("required_tags", "nice_tags"):
+            tags = meta.get(kind, []) or []
+            lines += [f"## {kind.replace('_', ' ')}", "", "| tag | strength | evidence |", "|---|---|---|"]
+            for t in tags:
+                if t not in by_tag and t not in VOCAB:
+                    problems.append(f"tracks/{path.name}: unknown tag '{t}'")
+                lines.append(f"| {t} | {strength(by_tag[t])} | {refs(by_tag[t])} |")
+            lines.append("")
+        required = meta.get("required_tags", []) or []
+        strong = sum(strength(by_tag[t]).startswith("✅") for t in required)
+        lines.insert(3, f"**Coverage:** {strong}/{len(required)} required tags have strong evidence.\n")
+        (OUT / f"GAPS-{name}.md").write_text("\n".join(lines), encoding="utf-8")
+
+
+def write_open_questions(experiences):
+    lines = ["# Open questions", "", "_Generated from every '## Open questions' section; answer them in /interview._", ""]
+    shallow_first = sorted(experiences, key=lambda e: DEPTH_ORDER.get(e["meta"].get("depth"), 0))
+    for e in shallow_first:
+        if e["questions"]:
+            lines += [f"## {e['id']} ({e['meta'].get('depth')})", *[f"- {q}" for q in e["questions"]], ""]
+    for path in sorted(PROFILE.glob("*.md")):
+        qs = open_questions(path.read_text(encoding="utf-8"))
+        if qs:
+            lines += [f"## profile/{path.name}", *[f"- {q}" for q in qs], ""]
+    (OUT / "OPEN-QUESTIONS.md").write_text("\n".join(lines), encoding="utf-8")
+
+
+def find(queries, vocab, facts):
+    """Map free-text posting phrases to tags (via synonyms) and print matching facts."""
+    by_tag = evidence_by_tag(facts)
+    for q in queries:
+        ql = q.lower()
+        tags = [t for t, (syns, _) in vocab.items()
+                if any(ql == s.lower() or (len(ql) > 2 and ql in s.lower())
+                       or (len(s) > 2 and re.search(rf"{re.escape(s.lower())}", ql))
+                       for s in syns + [t])]
+        print(f"\n## '{q}' → {', '.join(tags) if tags else 'NO TAG MATCH (add a synonym to skills.md?)'}")
+        for t in tags:
+            print(f"  [{t}] {strength(by_tag[t])}")
+            for f in by_tag[t]:
+                print(f"    {f['ref']} ({f['status']}): {f['text']}")
+        text_hits = [f for f in facts if ql in f["text"].lower() and not set(f["tags"]) & set(tags)]
+        for f in text_hits:
+            print(f"    text match {f['ref']} ({f['status']}): {f['text']}")
+
+
+VOCAB = {}
+
+if __name__ == "__main__":
+    if not (PROFILE / "skills.md").exists():
+        sys.exit("No profile found. Run `python scripts/init.py` first.")
+    problems = []
+    VOCAB = load_vocabulary()
+    experiences, facts = load_experiences(VOCAB, problems)
+    if len(sys.argv) > 2 and sys.argv[1] == "--find":
+        find(sys.argv[2:], VOCAB, facts)
+        sys.exit(0)
+    OUT.mkdir(exist_ok=True)
+    by_tag = evidence_by_tag(facts)
+    write_index(experiences, facts)
+    write_skill_matrix(VOCAB, by_tag)
+    write_gaps(by_tag, problems)
+    write_open_questions(experiences)
+    print(f"Indexed {len(experiences)} entries, {len(facts)} facts, {len(VOCAB)} tags -> generated/")
+    for p in problems:
+        print("WARNING:", p)
+    sys.exit(1 if problems else 0)

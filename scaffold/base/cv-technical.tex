@@ -1,0 +1,55 @@
+% Master technical CV (engineering track). Layout: templates/cv.cls.
+% Replace the example content with your own, or let Claude build it from your profile
+% ("build my base CVs from the profile"). Applications copy this file and tailor it.
+% End every bullet with "% src: <entry-id>#F<n>" so each claim traces to a profile fact.
+\documentclass{cv}
+
+\cvname{{{NAME}}}
+\cvlocation{{{CITY}}}
+\cvemail{{{EMAIL}}}
+\cvphone{{{PHONE}}}{{{PHONE_LINK}}}
+\cvlinkedin{{{LINKEDIN_URL}}}{{{NAME}}}
+
+\begin{document}
+
+\makecvheader
+
+\section{Key Highlights}
+\begin{bullets}
+  \item M.Sc. student in <field> at <university> with hands-on experience from <job or organisation>. % src: example#F1
+  \item <Your strongest technical claim, one line.> % src: example#F2
+\end{bullets}
+
+\section{Education}
+\education{<University>}{<Degree> (<year> of <n> years)}{Aug 2024 -- Present}
+\begin{bullets}
+  \item \textbf{Average grade:} <grade> % src: example#F3
+  \item \textbf{Coursework:} <three to five relevant courses>. % src: example#F4
+\end{bullets}
+\educationshort{<Upper secondary school>}{<Programme>}{Aug 2021 -- June 2024}
+
+\section{Technical Experience}
+\entry{<Job title>}{<Organisation>}{<City, Country>}{June 2026 -- Aug 2026}
+\begin{bullets}
+  \item <What you built or did, with a concrete detail.> % src: example#F5
+  \item <The result, or what it was used for.> % src: example#F6
+\end{bullets}
+
+\section{Projects}
+\begin{bullets}
+  \item \textbf{<Project>:} <one line on what it does and your part>. % src: example#F7
+\end{bullets}
+
+\section{Skills}
+\begin{skills}
+  \skill{Programming}{Python, C++, MATLAB}
+  \skill{Tools}{Linux, Git, Docker}
+  \skill{Languages}{<language> (native), English (fluent)}
+\end{skills}
+
+\section{Awards}
+\begin{bullets}
+  \item <Competition, placement, year.> % src: example#F8
+\end{bullets}
+
+\end{document}

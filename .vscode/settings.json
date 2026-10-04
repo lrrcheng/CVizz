@@ -1,0 +1,29 @@
+{
+  "latex-workshop.latex.tools": [
+    {
+      "name": "latexmk-templates",
+      "command": "latexmk",
+      "args": [
+        "-e",
+        "$ENV{'TEXINPUTS'}='%WORKSPACE_FOLDER%/templates//' . ($^O eq 'MSWin32' ? ';' : ':') . ($ENV{'TEXINPUTS'} // '')",
+        "-pdf",
+        "-synctex=1",
+        "-interaction=nonstopmode",
+        "-file-line-error",
+        "-auxdir=.build",
+        "-outdir=%OUTDIR%",
+        "%DOC%"
+      ],
+      "env": {}
+    }
+  ],
+  "latex-workshop.latex.recipes": [
+    { "name": "latexmk (templates/)", "tools": ["latexmk-templates"] }
+  ],
+  "latex-workshop.latex.autoBuild.run": "onSave",
+  "latex-workshop.view.pdf.viewer": "tab",
+  "latex-workshop.latex.autoClean.run": "never",
+  "files.exclude": {
+    "**/.build": true
+  }
+}

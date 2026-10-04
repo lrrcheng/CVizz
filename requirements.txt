@@ -1,0 +1,5 @@
+pyyaml>=6.0        # parse profile frontmatter (scripts/build_index.py)
+pypdf>=4.0         # read PDFs and page counts (build_pdf.py, /ingest)
+pymupdf>=1.24      # render PDFs to images for visual checks
+python-docx>=1.1   # read .docx CVs and letters (/ingest)
+pillow>=10.0       # extract images from scanned PDFs (/ingest)
