@@ -106,3 +106,20 @@ useful for deciding what to learn or build next.
 4. `/sync` so Claude learns from your edits.
 5. Send it, update `tracker.md`, and record the outcome in `outcome.md`.
 6. When you have spare time, `/interview` to deepen the profile.
+
+## Keeping your data private
+
+If you fork or push your copy, check what git would publish before every push:
+
+```
+git status --short          # should list only framework files
+git ls-files                # everything already committed
+```
+
+Your profile, CVs, letters and documents must never appear in either list. If you keep personal
+material in a new folder, add it to both `.gitignore` (so git skips it) and `.ignore` (so Claude
+can still search it).
+
+## License
+
+MIT. See `LICENSE`.

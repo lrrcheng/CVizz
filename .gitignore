@@ -4,6 +4,7 @@
 # personal/ is for your own resources (diplomas, transcripts, old CVs, ...), any subfolders.
 # .ignore re-enables these folders for Claude Code's search tools (git still ignores them).
 # ---------------------------------------------------------------------------
+/personal/
 /profile/
 /tracks/
 /base/
@@ -14,7 +15,6 @@
 /archive/
 /TODO.md
 /tracker.md
-/personal/
 /PROJECT-STATE.md
 
 # Personal folders of earlier CVs and letters (any name you use locally)
