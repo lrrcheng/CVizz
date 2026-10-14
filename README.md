@@ -1,5 +1,10 @@
 # Job application system for Claude Code
 
+> **Why I made this:** I wanted to apply for a variety of positions, but writing every CV and letter
+> by hand took too long, and an AI chat doesn't know enough about me to angle my experience towards
+> each role. So I built a system that learns my experience once and reuses it for every application.
+> Fork the repo to make your own changes.
+
 Write tailored, accurate CVs and cover letters with [Claude Code](https://claude.com/claude-code).
 Your experience is stored once as a growing, verified **profile**. Every application selects and
 phrases from it, asks you about gaps, and writes your answers back, so the profile gets more
