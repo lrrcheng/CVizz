@@ -34,7 +34,7 @@ personal/                the user's own resources (diplomas, transcripts, refere
 templates/               SHARED: cv.cls, coverletter.cls (all layout lives here)
 scripts/                 SHARED: init.py, build_index.py, build_pdf.py
 scaffold/                SHARED: starter versions of every personal file (used by init.py)
-.claude/skills/          SHARED: /apply, /interview, /sync, /ingest
+.claude/skills/          SHARED: /apply, /interview, /sync, /ingest, /interview-prep
 ```
 Everything marked PERSONAL is gitignored. `.ignore` re-enables these paths for search (Grep),
 so use Grep/Glob on them normally. Never move personal data into shared files
@@ -92,3 +92,5 @@ so use Grep/Glob on them normally. Never move personal data into shared files
 - `/interview [topic]`: 10–15 min session deepening the profile (shallowest/most valuable first).
 - `/sync <application folder>`: learn from the user's edits to a generated CV/letter.
 - `/ingest <path>`: add a new source (repo, document, CV) to the profile.
+- `/interview-prep [application folder]`: prepare for a job interview (essence of the role, ideas,
+  what to know, likely questions with answer outlines from the profile) → `interview-prep.md`.

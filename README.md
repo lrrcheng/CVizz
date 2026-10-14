@@ -43,13 +43,14 @@ complete with each application.
 | `/interview [topic]` | A 10–15 minute Q&A that fills holes in your profile (e.g. `/interview why this field`) |
 | `/sync [application folder]` | After you edit a generated `.tex`, records new facts and your wording preferences |
 | `/ingest <path>` | Adds a CV, transcript, document or code repository to your profile |
+| `/interview-prep [application folder]` | Prepares you for a job interview: what the role really is, ideas to think about, what to know to impress, and the questions to be ready for, with answer outlines from your own facts |
 
 ## Folder structure
 
 ```
 SHARED (in git)
   CLAUDE.md               Rules Claude follows in this folder
-  .claude/skills/         The four commands above
+  .claude/skills/         The commands above
   scripts/                init.py, build_index.py (indexes, lint, search), build_pdf.py
   templates/              cv.cls and coverletter.cls: all LaTeX layout
   scaffold/               Starter versions of every personal file (used by init.py)
@@ -105,7 +106,8 @@ useful for deciding what to learn or build next.
 3. Review `evidence.md`, the CV and the letter in the application folder. Give feedback or edit the `.tex`.
 4. `/sync` so Claude learns from your edits.
 5. Send it, update `tracker.md`, and record the outcome in `outcome.md`.
-6. When you have spare time, `/interview` to deepen the profile.
+6. Invited to an interview? `/interview-prep` with the application folder, then ask for a mock interview.
+7. When you have spare time, `/interview` to deepen the profile.
 
 ## Keeping your data private
 
