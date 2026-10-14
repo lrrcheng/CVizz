@@ -17,6 +17,9 @@ Input: posting text, a URL, or a file. If nothing is given, ask for the posting.
    → read top experience files in full). Also read `tracks/<track>.md` and `profile/motivation.md`.
    Check `companies/<company>.md` if it exists, and earlier letters to the same company (archive
    folders listed in `profile/sources.md`); don't repeat a weak angle that didn't work.
+   If the track file has a "Letter: company hook" section, also find one recent, role-relevant fact
+   about the company (latest quarterly or annual report, news from the last six months): reuse
+   `companies/<company>.md` or search, and save it there with its source.
 4. **Write `evidence.md`**: requirement → tags → best fact refs → ✅/⚠️/❌, plus a short
    "angle" paragraph: the 2–3 stories the letter will be built on and why.
 5. **Ask questions** for ⚠️/❌ rows where the user might have unrecorded evidence, plus anything
@@ -30,6 +33,8 @@ Input: posting text, a URL, or a file. If nothing is given, ask for the posting.
    bullets for this posting; every bullet keeps its `% src:` comment. One page.
 7. **Draft the letter**: `cover-letter.tex` with `\documentclass{coverletter}`, following
    `profile/style.md` (requirement → evidence paragraphs). Only facts with status verified or stated.
+   If the track allows a company hook and a fact clearly fits, add one light sentence to the opening
+   (style.md "Company hook"). Otherwise leave it out.
 8. **Build both PDFs**: `python scripts/build_pdf.py <folder>/cv.tex <folder>/cover-letter.tex`.
    Fix overflow until each is exactly one page.
 9. **Self-check before handing over**: re-read the letter against `evidence.md`. Every claim must

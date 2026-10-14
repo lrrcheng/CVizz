@@ -8,6 +8,7 @@ Claude adds to this file when you give feedback on drafts or run /sync after edi
 - **Every detail must earn its place:** open by naming the posting's core needs, then give each need one paragraph with one piece of evidence and an explicit link back. Cut technical details the reader doesn't need to see the link. Information without a crystal-clear connection to the posting weakens the letter.
 - **Coherent, not segmented:** the letter should read as one argument, not a list. Give it a thread and open each paragraph with a transition from the previous one, not with a new "The announcement lists…" every time (use that construction at most once or twice).
 - **Loop back:** whenever a paragraph moves outside the posting's domain, its last sentence must tie it back to why it matters for this role.
+- **Company hook (only when the track file allows it and it is clearly worth it):** one light, non-chalant sentence in the opening that shows curiosity about what is happening at the company right now, e.g. "This year's low reservoirs have shown up clearly in <company>'s quarterly results, and it made me curious about how the team handles a year like this." A hook only: no numbers, no analysis, no detail, no advice to the company, and never "I have been following". The fact must be in `companies/<company>.md` with a source, and the paragraph's `% src:` comment points there. If no recent fact clearly fits, leave it out. Letters to the same company word it differently.
 - One paragraph per experience covering several related requirements, not one paragraph per requirement. Fewer, stronger examples beat many small ones.
 - Prefer recent, professional examples over hobby projects when both fit.
 - Open with who you are and the exact position: "I am a <year> <degree> student in <field> at <university>, and I am applying for …"
@@ -26,7 +27,7 @@ Claude adds to this file when you give feedback on drafts or run /sync after edi
 - **Never use em-dashes (—), and avoid semicolons unless absolutely necessary.** Both give the text an AI look. Split into two sentences or use a comma instead.
 
 ## Cover letters: avoid
-- Describing the company back to them, or claiming "I have been following" the company.
+- Describing the company back to them, or claiming "I have been following" the company. (The one-sentence company hook above is the only exception.)
 - Addressing "advantage" requirements you don't meet ("my SQL experience is limited, but…"). Leave them out.
 - Side examples that dilute a paragraph.
 - Generic openers: "I am writing to express my interest in…", "I am excited to apply…", "When I first came across…"

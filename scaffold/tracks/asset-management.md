@@ -32,6 +32,9 @@ Timing: many finance summer internships recruit in autumn for the following summ
 |---|---|
 | (fill in) | |
 
+## Letter: company hook
+Worth adding when it clearly fits: one light sentence in the opening about something recent at the firm or in its markets (e.g. a market move in its latest results, or a new strategy), as a sign of curiosity. A hook only, no detail. Rules in `profile/style.md` ("Company hook").
+
 ## Known weaknesses and how to handle them
 - (fill in after reading generated/GAPS-asset-management.md)
 

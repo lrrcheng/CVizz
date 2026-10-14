@@ -33,6 +33,9 @@ Timing: many quant internships open in summer/autumn for the following summer an
 |---|---|
 | (fill in) | |
 
+## Letter: company hook
+Worth adding when it clearly fits, which is often the case for trading, market-analysis and energy-trading roles: one light sentence in the opening that links a recent market move to the company's results (e.g. power or metal prices showing up in its latest quarterly report), as a sign of curiosity. A hook only, no detail. Rules in `profile/style.md` ("Company hook").
+
 ## Rules
 - Never quote a best-of-N backtest Sharpe or return. Describe the method and the bias controls.
 - Be able to explain every design choice in any trading/modelling project you list.
