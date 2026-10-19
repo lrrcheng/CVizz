@@ -27,7 +27,8 @@ applications/<YYYY-MM-company-role>/   one folder per application
 companies/               notes per company, reused across applications
 generated/               output of scripts/build_index.py; NEVER edit by hand
 inbox/                   new material to ingest; move files to inbox/processed/ once ingested
-jobs/                    /find-jobs: searches.md (saved searches), shortlist.md; seen.json is script state
+jobs/                    /find-jobs: searches.md (saved searches), shortlist.md; seen.json is script state;
+                         postings/ holds pasted posting text saved by /save-job
 tracker.md, TODO.md      application overview and open tasks
 personal/                the user's own resources (diplomas, transcripts, references, old CVs), any
                          subfolders; a source library for /ingest, registered in profile/sources.md
@@ -35,7 +36,7 @@ personal/                the user's own resources (diplomas, transcripts, refere
 templates/               SHARED: cv.cls, coverletter.cls (all layout lives here)
 scripts/                 SHARED: init.py, build_index.py, build_pdf.py, find_jobs.py, tracker.py + tracker.html (dashboard)
 scaffold/                SHARED: starter versions of every personal file (used by init.py)
-.claude/skills/          SHARED: /apply, /find-jobs, /interview, /sync, /ingest, /interview-prep
+.claude/skills/          SHARED: /apply, /find-jobs, /save-job, /interview, /sync, /ingest, /interview-prep
 ```
 Everything marked PERSONAL is gitignored. `.ignore` re-enables these paths for search (Grep),
 so use Grep/Glob on them normally. Never move personal data into shared files
@@ -92,6 +93,8 @@ so use Grep/Glob on them normally. Never move personal data into shared files
 - `/apply <posting text or URL>`: full pipeline for one application.
 - `/find-jobs [focus]`: search FINN, LinkedIn and NAV for new postings and triage them against the
   profile → `jobs/shortlist.md`. Indeed isn't supported (it blocks automated requests).
+- `/save-job <link(s) or posting text>`: add a posting the user found themselves to `jobs/shortlist.md`, rated
+  like /find-jobs, and mark it seen so searches don't list it again.
 - `/interview [topic]`: 10–15 min session deepening the profile (shallowest/most valuable first).
 - `/sync <application folder>`: learn from the user's edits to a generated CV/letter.
 - `/ingest <path>`: add a new source (repo, document, CV) to the profile.

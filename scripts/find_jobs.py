@@ -7,6 +7,8 @@ Usage:
     python scripts/find_jobs.py --done [--keep KEY ...]   # mark the listed postings as reviewed, except KEYs
     python scripts/find_jobs.py --show URL [URL ...]      # print postings in full (FINN, LinkedIn, NAV or any
                                                           # other page); several at once keeps LinkedIn paced
+    python scripts/find_jobs.py --remember URL --company C --title T [--deadline D]   # posting saved by hand
+                                                          # (/save-job): never list it in a search
 
 Saved searches live in jobs/searches.md (personal). jobs/seen.json remembers every posting found, so a
 posting is listed until it's marked reviewed, and never again after that.
@@ -45,6 +47,7 @@ MAX_PAGES = {"finn": 2, "linkedin": 2, "nav": 1}  # FINN 50, LinkedIn 10, NAV 10
 KEEP_REVIEWED_DAYS = 120  # forget reviewed postings after this long (they're past the age limit anyway)
 USER_AGENT = "CVizz personal job search (python urllib)"
 ISO_DATE = re.compile(r"\d{4}-\d{2}-\d{2}$")
+LINKEDIN_ID = re.compile(r"(?:currentJobId=|/view/(?:[^/?]*-)?)(\d{6,})")
 
 
 # ---------------------------------------------------------------------------
@@ -301,6 +304,32 @@ def print_pending(seen):
                           p["location"], p["track"], p["url"]]))
 
 
+def key_for(url):
+    """(source, seen.json key) for a posting link, matching the keys the searches use."""
+    host = urllib.parse.urlparse(url).netloc.lower()
+    if "finn.no" in host and (m := re.search(r"(?:/ad/|finnkode=|finn\.no/)(\d{6,})", url)):
+        return "finn", f"finn:{m.group(1)}"
+    if "linkedin.com" in host and (m := LINKEDIN_ID.search(url)):
+        return "linkedin", f"linkedin:{m.group(1)}"
+    if "nav.no" in host and (m := re.search(r"/stilling/([0-9a-f-]{36})", url)):
+        return "nav", f"nav:{m.group(1)}"
+    return "other", "url:" + url.split("#")[0]
+
+
+def remember(seen, url, company="", title="", deadline="", track=""):
+    """Record a posting saved by hand (/save-job) as reviewed, so the searches never list it."""
+    source, key = key_for(url)
+    known = key in seen["postings"]
+    p = seen["postings"].setdefault(key, {
+        "key": key, "source": source, "title": "", "company": "", "location": "", "published": "",
+        "deadline": "", "url": url, "track": "", "query": "saved by hand", "first_seen": date.today().isoformat()})
+    for field, value in (("company", company), ("title", title), ("deadline", parse_deadline(deadline)), ("track", track)):
+        if value and not p[field]:
+            p[field] = value
+    p["status"] = "reviewed"
+    return key, known
+
+
 # ---------------------------------------------------------------------------
 # Reading one posting
 # ---------------------------------------------------------------------------
@@ -318,7 +347,7 @@ def find_job_posting(obj):
 def show(url):
     host = urllib.parse.urlparse(url).netloc.lower()
     if "linkedin.com" in host:
-        m = re.search(r"(?:currentJobId=|/view/(?:[^/?]*-)?)(\d{6,})", url)
+        m = LINKEDIN_ID.search(url)
         if not m:
             sys.exit("Couldn't find a job id in that LinkedIn link")
         page = fetch(f"https://www.linkedin.com/jobs-guest/jobs/api/jobPosting/{m.group(1)}", "linkedin")
@@ -358,7 +387,7 @@ def show(url):
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--query", help="one-off search, run on top of the saved searches")
-    parser.add_argument("--track", default="", help="track label for --query")
+    parser.add_argument("--track", default="", help="track label for --query or --remember")
     parser.add_argument("--sources", nargs="+", choices=SOURCES, help="sources for --query (default: all)")
     parser.add_argument("--location", help="LinkedIn location for --query (default: Norway)")
     parser.add_argument("--only", action="store_true", help="run only --query, not the saved searches")
@@ -366,6 +395,10 @@ def main():
     parser.add_argument("--done", action="store_true", help="mark the listed postings as reviewed")
     parser.add_argument("--keep", nargs="+", default=[], metavar="KEY", help="with --done: leave these listed")
     parser.add_argument("--show", nargs="+", metavar="URL", help="print postings in full (paced like a search)")
+    parser.add_argument("--remember", metavar="URL", help="mark a posting saved by hand as seen (/save-job)")
+    parser.add_argument("--company", default="", help="with --remember")
+    parser.add_argument("--title", default="", help="with --remember")
+    parser.add_argument("--deadline", default="", help="with --remember (YYYY-MM-DD)")
     args = parser.parse_args()
 
     if args.show:
@@ -380,6 +413,12 @@ def main():
         return
 
     seen = load_seen()
+    if args.remember:
+        key, known = remember(seen, args.remember, args.company, args.title, args.deadline, args.track)
+        save_seen(seen)
+        print(f"{key}: {'already known, now marked' if known else 'saved as'} reviewed; /find-jobs won't list it again.")
+        return
+
     if args.done:
         keep = set(args.keep)
         marked = [p for p in pending(seen) if p["key"] not in keep]

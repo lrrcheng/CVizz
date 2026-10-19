@@ -46,6 +46,7 @@ complete with each application.
 |---|---|
 | `/apply <job posting text or URL>` | Saves the posting, maps its requirements to your facts, asks about gaps, drafts a CV and cover letter, and builds the PDFs |
 | `/find-jobs [focus]` | Runs your saved searches on FINN, LinkedIn and NAV (arbeidsplassen.no), reads the promising postings, rates them against your profile and keeps a shortlist in `jobs/shortlist.md` |
+| `/save-job <link(s) or posting text>` | Saves a posting you found yourself to the shortlist: reads it, rates the fit against your profile and adds the row (it shows up in the dashboard) |
 | `/interview [topic]` | A 10–15 minute Q&A that fills holes in your profile (e.g. `/interview why this field`) |
 | `/sync [application folder]` | After you edit a generated `.tex`, records new facts and your wording preferences |
 | `/ingest <path>` | Adds a CV, transcript, document or code repository to your profile |
