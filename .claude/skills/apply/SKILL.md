@@ -10,7 +10,8 @@ Input: posting text, a URL, or a file. If nothing is given, ask for the posting.
 ## Steps
 1. **Save the posting.** Create `applications/<YYYY-MM>-<company>-<role-slug>/posting.md` with
    frontmatter (`company`, `role`, `location`, `deadline`, `url`, `language`, `track`) and the
-   full posting text verbatim. If given a URL, fetch it; if fetching fails, ask the user to paste it.
+   full posting text verbatim. If given a URL, fetch it (FINN, LinkedIn and NAV links:
+   `python scripts/find_jobs.py --show <url>`); if fetching fails, ask the user to paste it.
 2. **Pick the track** (engineering / quant / asset-management) from the role, using each track
    file's target-role list. State the choice in one line; the user can override.
 3. **Retrieve evidence** following the procedure in CLAUDE.md (index → `--find` per requirement
@@ -42,5 +43,6 @@ Input: posting text, a URL, or a file. If nothing is given, ask for the posting.
    No em-dashes and (almost) no semicolons in the letter body. Read each paragraph and ask: does every
    sentence connect clearly to the posting? If a sentence only adds information, cut it.
 10. **Snapshot the drafts** as `cv.draft.tex` and `cover-letter.draft.tex` (used by /sync later),
-    add a row to `tracker.md` (status: drafted), and report: track, angle, any facts that are
+    add a row to `tracker.md` (status: drafted), set the posting's status to `applied` in
+    `jobs/shortlist.md` if it's there, and report: track, angle, any facts that are
     `stated` but central (ask the user to confirm), and the PDF paths.

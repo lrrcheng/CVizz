@@ -45,6 +45,7 @@ complete with each application.
 | Command | What it does |
 |---|---|
 | `/apply <job posting text or URL>` | Saves the posting, maps its requirements to your facts, asks about gaps, drafts a CV and cover letter, and builds the PDFs |
+| `/find-jobs [focus]` | Runs your saved searches on FINN, LinkedIn and NAV (arbeidsplassen.no), reads the promising postings, rates them against your profile and keeps a shortlist in `jobs/shortlist.md` |
 | `/interview [topic]` | A 10–15 minute Q&A that fills holes in your profile (e.g. `/interview why this field`) |
 | `/sync [application folder]` | After you edit a generated `.tex`, records new facts and your wording preferences |
 | `/ingest <path>` | Adds a CV, transcript, document or code repository to your profile |
@@ -56,7 +57,8 @@ complete with each application.
 SHARED (in git)
   CLAUDE.md               Rules Claude follows in this folder
   .claude/skills/         The commands above
-  scripts/                init.py, build_index.py (indexes, lint, search), build_pdf.py
+  scripts/                init.py, build_index.py (indexes, lint, search), build_pdf.py, find_jobs.py,
+                          tracker.py + tracker.html (browser dashboard for tracker.md and the job shortlist)
   templates/              cv.cls and coverletter.cls: all LaTeX layout
   scaffold/               Starter versions of every personal file (used by init.py)
 
@@ -73,6 +75,7 @@ PERSONAL (gitignored, created by init.py)
   companies/              Notes on companies, reused across applications
   generated/              Indexes, skill matrix, gap reports, open questions (don't edit)
   inbox/                  Drop new material here, then /ingest it
+  jobs/                   Your saved job searches and the /find-jobs shortlist
   tracker.md, TODO.md     Application overview and open tasks
   personal/               Your own resources: diplomas, transcripts, references, old CVs (any subfolders)
 ```
@@ -99,14 +102,22 @@ see where a claim came from.
 python scripts/build_index.py                       # rebuild generated/ and lint the profile
 python scripts/build_index.py --find "SQL" "PLC"     # which facts match a phrase from a posting?
 python scripts/build_pdf.py applications/<folder>/cv.tex
+python scripts/tracker.py                           # dashboard in the browser: applications + job shortlist tabs
+                                                    # (photo backdrop: save one as personal/dashboard-bg.jpg)
+python scripts/find_jobs.py                         # run the searches in jobs/searches.md, list new postings
+python scripts/find_jobs.py --show <url>             # read a FINN, LinkedIn or NAV posting in full
 ```
+
+`find_jobs.py` reads the sites' public search pages slowly, for your own job search. Indeed blocks it, so
+it isn't supported. LinkedIn's terms don't allow automated access: the script never logs in, but use it
+at your own discretion.
 
 `generated/GAPS-<track>.md` shows which skills a track expects that your profile can't prove yet:
 useful for deciding what to learn or build next.
 
 ## Typical workflow
 
-1. Find a posting → `/apply` with the text or link.
+1. Run `/find-jobs` (or find a posting yourself) → `/apply` with the text or link.
 2. Answer Claude's questions about gaps. Answers are saved to your profile.
 3. Review `evidence.md`, the CV and the letter in the application folder. Give feedback or edit the `.tex`.
 4. `/sync` so Claude learns from your edits.
