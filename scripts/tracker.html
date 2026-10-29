@@ -194,6 +194,11 @@
   .btn-ghost { height: 32px; padding: 0 14px; border-radius: var(--radius-pill); border: 1px solid var(--border-hairline);
                background: transparent; color: var(--text-primary); font-size: 12.5px; transition: background var(--ease); }
   .btn-ghost:hover { background: var(--glass-card); }
+  .btn-ghost.icon { height: 30px; padding: 0 14px 0 11px; display: inline-flex; align-items: center; gap: 6px;
+                    white-space: nowrap; font-size: 12px; }
+  .btn-ghost.icon .i { width: 14px; height: 14px; }
+  .nav .btn-ghost.icon { height: 38px; padding: 0 16px 0 13px; background: var(--glass-card); font-size: 12.5px; }
+  .nav .btn-ghost.icon:hover { background: var(--glass-card-hover); }
   .btn-ghost.danger { color: var(--negative-text); }
   .mini { height: 26px; padding: 0 10px; display: inline-flex; align-items: center; gap: 5px; white-space: nowrap;
           border-radius: var(--radius-pill); border: 1px solid var(--border-hairline); background: var(--glass-card);
@@ -289,13 +294,76 @@
   .drawer .inline input { flex: 1; min-width: 0; }
   .drawer footer { display: flex; gap: 8px; padding: 16px 24px; border-top: 1px solid var(--divider); }
   .drawer footer .spacer { flex: 1; }
+
+  /* ---------------------------------------------------------------- application viewer */
+  .viewer { position: fixed; top: 12px; right: 12px; bottom: 12px; width: min(1180px, calc(100vw - 24px)); display: flex;
+            flex-direction: column; overflow: hidden; border-radius: var(--radius-window); background: rgba(40, 40, 42, 0.86);
+            border: 1px solid var(--border-hairline); box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
+            backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur); }
+  .viewer header { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 18px 22px 12px; }
+  .viewer header h2 { flex: 1 1 280px; min-width: 0; margin: 0; font-size: 18px; font-weight: 500; }
+  .viewer header h2 small { display: block; margin-top: 3px; font-size: 12px; font-weight: 400; color: var(--text-secondary); }
+  .viewer .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+  .viewer .close { width: 32px; height: 32px; }
+  .viewer-main { flex: 1; min-height: 0; display: flex; border-top: 1px solid var(--divider); }
+  .viewer-pane { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+  .doc-list { width: 260px; flex: none; overflow-y: auto; padding: 8px; border-right: 1px solid var(--divider); }
+  .doc-list button { display: block; width: 100%; padding: 9px 11px; border: 0; border-radius: 10px; background: none;
+                     text-align: left; transition: background var(--ease); }
+  .doc-list button:hover { background: var(--glass-card); }
+  .doc-list button.on { background: var(--glass-card-hover); box-shadow: inset 3px 0 0 var(--accent); }
+  .doc-list b { display: block; font-size: 13px; font-weight: 500; }
+  .doc-list small { display: block; margin-top: 2px; font-size: 11.5px; color: var(--text-secondary);
+                    overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .doc-tabs { display: flex; flex-wrap: wrap; gap: 6px; padding: 12px 22px; border-bottom: 1px solid var(--divider); }
+  .doc-tabs .tab.stale::after { content: "•"; margin-left: 5px; color: var(--highlight-text); }
+  .doc-note { margin: 0; padding: 8px 22px; font-size: 12px; color: var(--highlight-text); border-bottom: 1px solid var(--divider); }
+  .doc-body { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+  .doc-body iframe { flex: 1; width: 100%; border: 0; background: #525659; }
+  .doc-text { flex: 1; overflow-y: auto; padding: 18px 26px 30px; }
+  .doc-empty { margin: auto; display: grid; gap: 12px; justify-items: center; padding: 40px; color: var(--text-secondary); }
+  .doc-text pre, .md pre { white-space: pre-wrap; overflow-wrap: anywhere; margin: 0 0 12px; padding: 12px 14px;
+                           border-radius: 10px; background: var(--glass-panel); font: 12px/1.5 Consolas, "SF Mono", monospace; }
+  .md { max-width: 900px; line-height: 1.6; color: var(--text-primary); }
+  .md h1, .md h2, .md h3, .md h4 { margin: 22px 0 8px; font-weight: 500; line-height: 1.3; }
+  .md h1 { font-size: 20px; } .md h2 { font-size: 16.5px; } .md h3 { font-size: 14.5px; } .md h4 { font-size: 13.5px; }
+  .md > :first-child { margin-top: 0; }
+  .md p { margin: 0 0 10px; color: var(--text-secondary); }
+  .md ul, .md ol { margin: 0 0 12px; padding-left: 22px; color: var(--text-secondary); }
+  .md li { margin: 3px 0; }
+  .md blockquote { margin: 0 0 12px; padding: 4px 14px; border-left: 3px solid var(--accent); color: var(--text-secondary); }
+  .md hr { border: 0; border-top: 1px solid var(--divider); margin: 18px 0; }
+  .md b { color: var(--text-primary); font-weight: 600; }
+  .md .tablewrap { overflow-x: auto; margin: 0 0 14px; border: 1px solid var(--divider); border-radius: 10px; }
+  .md table { font-size: 12.5px; }
+  .md th, .md td { padding: 7px 10px; }
+  .md th { cursor: default; text-transform: none; letter-spacing: 0; font-size: 12px; color: var(--text-secondary);
+           background: var(--glass-panel); }
+  .md tbody tr { cursor: default; }
+  .md table.meta { width: auto; margin: 0 0 16px; }
+  .md table.meta th { background: none; padding-left: 0; }
+
+  /* ---------------------------------------------------------------- Claude menu */
+  .menu { position: fixed; z-index: 5; width: min(420px, calc(100vw - 24px)); padding: 8px; border-radius: var(--radius-panel);
+          background: rgba(40, 40, 42, 0.94); border: 1px solid var(--border-hairline); box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+          backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur); }
+  .menu p { margin: 6px 10px 8px; font-size: 11.5px; color: var(--text-tertiary); }
+  .menu form { display: grid; gap: 6px; padding: 10px; border-radius: 10px; transition: background var(--ease); }
+  .menu form:hover, .menu form:focus-within { background: var(--glass-card); }
+  .menu b { font-weight: 500; }
+  .menu small { color: var(--text-secondary); font-size: 12px; }
+  .menu .inline { display: flex; gap: 6px; }
+  .menu input { flex: 1; min-width: 0; height: 30px; padding: 0 12px; border-radius: var(--radius-pill); outline: none;
+                background: var(--glass-input); border: 1px solid var(--border-hairline); }
+  .menu input:focus { border-color: rgba(232, 100, 60, 0.6); }
+
   .toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); max-width: 90vw; padding: 10px 16px;
            border-radius: var(--radius-card); background: rgba(40, 40, 42, 0.88); border: 1px solid var(--border-hairline);
            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4); backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur); }
   .toast.error { background: rgba(120, 32, 26, 0.92); }
 
   @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-    .window, .drawer, .toast { background: var(--glass-solid); }
+    .window, .drawer, .viewer, .menu, .toast { background: var(--glass-solid); }
   }
   @media (max-width: 1100px) {
     .top { grid-template-columns: minmax(0, 1fr); }
@@ -314,6 +382,8 @@
     .donut { flex-direction: column; }
     .tabs { margin-left: 0; }
     .drawer .row { grid-template-columns: 1fr; }
+    .viewer-main { flex-direction: column; }
+    .doc-list { width: auto; max-height: 150px; border-right: 0; border-bottom: 1px solid var(--divider); }
   }
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation: none !important; transition: none !important; }
@@ -327,6 +397,8 @@
     <div class="brand" data-icon="briefcase"><span>CVizz</span><small>Job search</small></div>
     <label class="searchbox" id="searchBox"><span data-icon="search"></span>
       <input type="search" id="search" placeholder="Search…" aria-label="Search the table"><kbd>/</kbd></label>
+    <button type="button" class="btn-ghost icon" id="cvs" title="The tailored CV and cover letter for each application"><span data-icon="file"></span>CVs</button>
+    <button type="button" class="icon-btn" id="cmds" title="Claude Code commands" aria-haspopup="true" data-icon="terminal"></button>
     <button type="button" class="icon-btn" id="reload" title="Reload from disk" data-icon="refresh"></button>
     <button type="button" class="icon-btn" id="bell" data-icon="bell"><span class="dot" id="bellDot" hidden></span></button>
     <div class="me" id="me"></div>
@@ -360,6 +432,8 @@
       <span class="spacer"></span>
       <select class="select" id="trackFilter" aria-label="Filter by track"></select>
       <select class="select" id="fitFilter" aria-label="Filter by fit"></select>
+      <button type="button" class="btn-ghost icon" id="findJobs" hidden
+              title="Start /find-jobs in Claude Code (opens a terminal window)"><span data-icon="search"></span>Find jobs</button>
       <button type="button" class="btn-primary" id="add"><span data-icon="plus"></span><span id="addLabel">Add</span></button>
     </div>
     <div class="tbl" id="wrap">
@@ -369,7 +443,8 @@
     <div class="missing" id="missing" hidden></div>
   </section>
   <div class="tail" id="tail"></div>
-  <p class="hint">Saves straight to <code id="fileName">tracker.md</code>. Click a row to edit it, a column title to sort.
+  <p class="hint">Saves straight to <code id="fileName">tracker.md</code>. Click an application to see its CV, letter and
+    notes, a posting to edit it, a column title to sort.
     <kbd>/</kbd> search, <kbd>Ctrl</kbd>+<kbd>S</kbd> saves the form, <kbd>Esc</kbd> closes it.</p>
 </div>
 
@@ -384,6 +459,18 @@
     <button type="button" class="btn-primary" id="save">Save</button>
   </footer>
 </aside>
+<aside class="viewer" id="viewer" hidden>
+  <header><h2 id="viewerTitle"></h2><div class="actions" id="viewerActions"></div></header>
+  <div class="viewer-main">
+    <nav class="doc-list" id="docList" aria-label="Applications" hidden></nav>
+    <div class="viewer-pane">
+      <nav class="doc-tabs" id="docTabs"></nav>
+      <p class="doc-note" id="docNote" hidden></p>
+      <div class="doc-body" id="docBody"></div>
+    </div>
+  </div>
+</aside>
+<div class="menu" id="menu" role="menu" hidden></div>
 <div class="toast" id="toast" hidden></div>
 
 <script>
@@ -395,7 +482,7 @@ const SHEETS = {
              search: "Search company, role, notes…" },
   jobs: { title: "Job shortlist", table: "All postings", doc: "Job shortlist", noun: "posting",
           search: "Search company, role, why it fits…",
-          missing: "No shortlist yet. Run /find-jobs in Claude Code to create it." },
+          missing: "No shortlist yet. Click Find jobs (or run /find-jobs in Claude Code) to create it." },
 };
 const FITS = ["strong", "possible", "stretch"];
 const CLOSED = ["skip", "applied"];  // a deadline no longer matters for these statuses
@@ -430,6 +517,9 @@ const ICONS = {
   plus: '<path d="M5 12h14"/><path d="M12 5v14"/>',
   external: '<path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>',
   terminal: '<path d="m4 17 6-6-6-6"/><path d="M12 19h8"/>',
+  x: '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
+  file: '<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 13H8"/><path d="M16 17H8"/><path d="M16 13h-2"/>',
+  eye: '<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/>',
   folder: '<path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/>',
 };
 function icon(name) {
@@ -564,6 +654,7 @@ function render() {
   $("tableTitle").textContent = info().table;
   for (const b of $("tabs").children) b.classList.toggle("on", b.dataset.sheet === state.sheet);
   $("fileName").textContent = d.file;
+  $("findJobs").hidden = state.sheet !== "jobs";
   renderMe(); renderBell(); renderOverview(); renderDeadlines();
   for (const id of ["wrap", "add", "kpis", "charts", "searchBox"]) $(id).hidden = missing;
   $("missing").hidden = !missing;
@@ -814,7 +905,8 @@ function renderBody() {
   $("empty").hidden = list.length > 0;
   $("tableCount").textContent = list.length === total ? String(total) : `${list.length} of ${total}`;
   $("body").replaceChildren(...list.map(({ r, i }) => el("tr", {
-    class: s >= 0 && r[s] === "skip" ? "dim" : "", onclick: () => openDrawer(r) },
+    class: s >= 0 && r[s] === "skip" ? "dim" : "",
+    onclick: () => (colOf("link") >= 0 && state.data.exists[i] ? openViewer(r) : openDrawer(r)) },
     ...r.map((v, c) => el("td", { class: "k-" + kind(c) }, cellContent(r, i, c, v))))));
 }
 
@@ -833,8 +925,10 @@ function cellContent(row, i, c, v) {
     if (!state.data.exists[i]) return el("span", { class: "missing-file", title: "Not found in this folder" }, v);
     const name = v.replace(/[\\/]+$/, "").split(/[\\/]/).pop();
     return el("div", { class: "link" },
-      el("button", { type: "button", class: "mini", title: "Open " + v, onclick: (e) => { e.stopPropagation(); openPath(v); } },
-        icon("folder"), "Open"),
+      el("button", { type: "button", class: "mini", title: "View the CV, letter and notes here",
+        onclick: (e) => { e.stopPropagation(); openViewer(row); } }, icon("eye"), "View"),
+      el("button", { type: "button", class: "mini", title: "Open " + v + " on your computer",
+        onclick: (e) => { e.stopPropagation(); openPath(v); } }, icon("folder"), "Open"),
       el("span", { title: v }, name));
   }
   if (k === "url") {
@@ -842,8 +936,8 @@ function cellContent(row, i, c, v) {
     return el("div", { class: "link" },
       el("a", { class: "mini", href: v, target: "_blank", rel: "noopener noreferrer", title: "Open " + v,
         onclick: (e) => e.stopPropagation() }, siteOf(v), icon("external")),
-      el("button", { type: "button", class: "mini", title: `Copy "/apply ${v}" to paste into Claude Code`,
-        onclick: (e) => { e.stopPropagation(); copyApply(v); } }, icon("terminal"), "/apply"));
+      el("button", { type: "button", class: "mini", title: "Start /apply for this posting in Claude Code (opens a terminal window)",
+        onclick: (e) => { e.stopPropagation(); runSkill("apply", v); } }, icon("terminal"), "/apply"));
   }
   if (k === "long" || k === "notes") return el("div", { class: "clamp", title: v }, v);
   return v;
@@ -870,10 +964,14 @@ async function openPath(v) {
   try { await api("/api/open", { path: v }); } catch (e) { toast(e.message, true); }
 }
 
-async function copyApply(url) {
-  const text = "/apply " + url;
-  try { await navigator.clipboard.writeText(text); toast("Copied. Paste it into Claude Code: " + text); }
-  catch { toast("Couldn't copy. Paste this into Claude Code: " + text, true); }
+// Opens Claude Code in a new terminal window with the command; if that fails, copies the command instead.
+async function runSkill(skill, arg = "") {
+  const text = "/" + skill + (arg ? " " + arg : "");
+  let why;
+  try { await api("/api/run", { skill, arg }); toast("Opened Claude Code in a new window: " + text); return; }
+  catch (e) { why = e.message; }
+  try { await navigator.clipboard.writeText(text); toast(`${why}. Copied instead; paste it into Claude Code: ${text}`, true); }
+  catch { toast(`${why}. Paste this into Claude Code: ${text}`, true); }
 }
 
 // Text below the table ("Next season", "Still to read", ...) as collapsible lists. Read-only.
@@ -905,6 +1003,270 @@ function linkify(text) {
   }
   out.push(text.slice(last));
   return out;
+}
+
+// ---------------------------------------------------------------- application viewer
+const DOC_LABELS = { "cv.pdf": "CV", "cover-letter.pdf": "Cover letter", "posting.md": "Posting", "evidence.md": "Evidence",
+  "questions.md": "Questions", "application-questions.md": "Application questions", "cover-letter.txt": "Letter (text)",
+  "cover-letter-short.txt": "Short letter (text)", "interview-prep.md": "Interview prep", "outcome.md": "Outcome" };
+const CV_DOCS = ["cv.pdf", "cover-letter.pdf"];
+// path: the application folder or file shown; row: its tracker row. In the CVs view, list holds every application
+// (picked on the left) and only limits the tabs to the CV and letter.
+const view = { path: null, row: null, title: "", subtitle: "", info: null, doc: "", list: null, only: null };
+const withToken = (path) => `path=${encodeURIComponent(path)}&token=${encodeURIComponent(TOKEN)}`;
+const fileUrl = (doc) => `/api/file?${withToken(doc.path)}&v=${doc.modified}`;
+const docsOf = (path) => api("/api/docs?" + withToken(path));
+const shownDocs = () => (view.only ? view.info.docs.filter((d) => view.only.includes(d.name)) : view.info.docs);
+
+function openViewer(row) {
+  const pick = (re) => { const i = state.data.columns.findIndex((c) => re.test(c)); return i >= 0 ? row[i] : ""; };
+  showFolder(row[colOf("link")], { row, title: pick(/company/i),
+    subtitle: [pick(/role/i), pick(/^status$/i), pick(/^date$/i)].filter(Boolean).join(" · ") });
+}
+
+// Every application with a folder (so a tailored CV), newest first
+function cvItems() {
+  const d = state.sheets.tracker;
+  if (!d || d.missing) return [];
+  const col = (re) => d.columns.findIndex((c) => re.test(c));
+  const link = d.columns.findIndex((_, i) => kindOf(d.columns, i) === "link");
+  const date = col(/^date$/i), company = col(/company/i), role = col(/role/i);
+  return d.rows.map((r, i) => ({ r, ok: link >= 0 && d.exists[i] && /^`?applications\//.test(r[link].trim()) }))
+    .filter((x) => x.ok).map((x) => x.r)
+    .sort((a, b) => (date < 0 ? 0 : b[date].localeCompare(a[date])))
+    .map((r) => ({ path: r[link], row: r, title: r[company] || r[link],
+                   subtitle: [role >= 0 ? r[role] : "", date >= 0 ? r[date] : ""].filter(Boolean).join(" · ") }));
+}
+
+function openCvs() {
+  const list = cvItems();
+  if (!list.length) return toast("No applications with a folder yet: /apply makes one.", true);
+  const start = list.find((x) => x.path === view.path) || list[0];
+  showFolder(start.path, { ...start, list, only: CV_DOCS });
+}
+
+async function showFolder(path, { row = null, title = "", subtitle = "", list = null, only = null } = {}) {
+  let info;
+  try { info = await docsOf(path); } catch (e) { return toast(e.message, true); }
+  closeDrawer(); toggleMenu(false);
+  const keep = view.path && list && view.only;  // moving between applications in the CVs view keeps the CV/letter tab
+  Object.assign(view, { path, row, title: title || info.path, subtitle, info, list, only });
+  const docs = shownDocs();
+  if (!keep || !docs.some((d) => d.name === view.doc)) view.doc = docs[0] ? docs[0].name : "";
+  renderViewer();
+  $("overlay").hidden = false; $("viewer").hidden = false;
+}
+
+function closeViewer() {
+  $("viewer").hidden = true; $("docBody").replaceChildren();
+  Object.assign(view, { path: null, row: null, list: null, only: null });
+  if ($("drawer").hidden) $("overlay").hidden = true;
+}
+
+// "Edit details" also works from the CVs view, which can be opened on either tab
+async function editRow(row) {
+  closeViewer();
+  await switchSheet("tracker");
+  const match = state.data.rows.find((r) => same(r, row));
+  if (match) openDrawer(match); else toast("That application changed on disk; reloaded.", true);
+}
+
+// Picks up PDFs rebuilt or notes written by Claude meanwhile; re-renders only if something changed.
+async function reloadViewer(force = false) {
+  if (!view.path) return;
+  try {
+    const info = await docsOf(view.path);
+    if (!force && JSON.stringify(info) === JSON.stringify(view.info)) return;
+    view.info = info;
+    const docs = shownDocs();
+    if (!docs.some((x) => x.name === view.doc)) view.doc = docs[0] ? docs[0].name : "";
+    renderViewer();
+  } catch (e) { toast(e.message, true); }
+}
+
+function renderViewer() {
+  const { row, info } = view;
+  $("viewerTitle").replaceChildren(view.title, el("small", {}, view.subtitle));
+  const btn = (label, title, onclick) => el("button", { type: "button", class: "btn-ghost icon", title, onclick }, label);
+  const acts = [];
+  if (info.buildable) acts.push(rebuildButton());
+  if (info.application) acts.push(
+    btn("/sync", "Learn from your edits to the CV and letter (opens Claude Code)", () => runSkill("sync", info.folder)),
+    btn("/interview-prep", "Prepare for an interview for this application (opens Claude Code)", () => runSkill("interview-prep", info.folder)));
+  if (view.list) acts.push(btn("All files", "Posting, evidence and the other notes for this application",
+    () => showFolder(view.path, { row, title: view.title, subtitle: view.subtitle })));
+  acts.push(btn(info.folder ? "Open folder" : "Open file", "Open on your computer", () => openPath(info.folder || info.path)));
+  if (row) acts.push(btn("Edit details", "Edit this row of tracker.md", () => editRow(row)));
+  acts.push(el("button", { type: "button", class: "icon-btn close", title: "Close (Esc)", onclick: closeViewer }, icon("x")));
+  $("viewerActions").replaceChildren(...acts);
+  const docs = shownDocs();
+  $("docTabs").replaceChildren(...docs.map((d) => el("button", {
+    type: "button", class: "tab" + (d.stale || d.missing ? " stale" : ""), title: d.stale ? "Older than its .tex: rebuild" : d.name,
+    onclick: () => showDoc(d.name) }, DOC_LABELS[d.name] || d.name)));
+  [...$("docTabs").children].forEach((b, i) => (b.dataset.name = docs[i].name));
+  renderDocList();
+  showDoc(view.doc);
+}
+
+function renderDocList() {
+  const nav = $("docList"), scroll = nav.scrollTop;
+  nav.hidden = !view.list;
+  if (!view.list) return nav.replaceChildren();
+  nav.replaceChildren(...view.list.map((x) => el("button", { type: "button", class: x.path === view.path ? "on" : "",
+    onclick: () => showFolder(x.path, { ...x, list: view.list, only: view.only }) },
+    el("b", {}, x.title), el("small", {}, x.subtitle))));
+  nav.scrollTop = scroll;
+  const on = nav.querySelector(".on");
+  if (on) on.scrollIntoView({ block: "nearest" });
+}
+
+function rebuildButton() {
+  return el("button", { type: "button", class: "btn-ghost icon", title: "Compile the .tex files into PDFs",
+    onclick: (e) => rebuild(e.currentTarget) }, icon("refresh"), "Rebuild PDFs");
+}
+
+async function rebuild(button) {
+  button.disabled = true; button.lastChild.textContent = "Building…";
+  try {
+    const r = await api("/api/build", { path: view.info.folder });
+    if (!view.path) return;
+    if (!r.ok) {
+      $("docBody").replaceChildren(el("div", { class: "doc-text" }, el("pre", {}, r.output)));
+      button.disabled = false; button.lastChild.textContent = "Rebuild PDFs";
+      return toast("Build failed: the LaTeX log is shown", true);
+    }
+    await reloadViewer(true);
+    const built = r.output.split("\n").filter((l) => l.startsWith("OK:")).map((l) => l.replace(/^OK:.*[\\/]/, ""));
+    toast("Built " + (built.join(", ") || "the PDFs"));
+  } catch (e) {
+    toast(e.message, true); button.disabled = false; button.lastChild.textContent = "Rebuild PDFs";
+  }
+}
+
+async function showDoc(name) {
+  view.doc = name;
+  for (const b of $("docTabs").children) b.classList.toggle("on", b.dataset.name === name);
+  const doc = view.info.docs.find((x) => x.name === name), body = $("docBody"), note = $("docNote");
+  note.hidden = !(doc && doc.stale);
+  if (doc && doc.stale) note.textContent = `${name.replace(/\.pdf$/, ".tex")} was changed after this PDF was built. Rebuild to see the latest version.`;
+  if (!doc) return body.replaceChildren(el("div", { class: "doc-empty" }, "No PDFs or notes here yet."));
+  if (doc.missing) return body.replaceChildren(el("div", { class: "doc-empty" }, `${name} hasn't been built yet.`, rebuildButton()));
+  if (doc.kind === "pdf") return body.replaceChildren(el("iframe", { src: fileUrl(doc) + "#view=FitH", title: name }));
+  body.replaceChildren(el("div", { class: "doc-empty" }, "Loading…"));
+  try {
+    const res = await fetch(fileUrl(doc));
+    if (!res.ok) throw new Error(`Couldn't load ${name}`);
+    const text = await res.text();
+    if (view.doc !== name) return;  // another tab was picked meanwhile
+    body.replaceChildren(el("div", { class: "doc-text" },
+      name.endsWith(".md") ? el("div", { class: "md" }, ...markdown(text)) : el("pre", {}, text)));
+  } catch (e) { body.replaceChildren(el("div", { class: "doc-empty" }, e.message)); }
+}
+
+// Enough Markdown for the notes /apply writes: frontmatter, headings, tables, lists, quotes, code, bold, links.
+// Builds DOM nodes (never innerHTML), so file contents can't inject markup.
+function inline(text) {
+  const out = [], re = /`([^`]+)`|\*\*(.+?)\*\*|\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)|(https?:\/\/[^\s<>()|]+)|(?<![\w*])[*_]([^*_\s][^*_]*)[*_](?![\w*])/g;
+  let last = 0;
+  for (const m of text.matchAll(re)) {
+    out.push(text.slice(last, m.index));
+    if (m[1] != null) out.push(el("code", {}, m[1]));
+    else if (m[2] != null) out.push(el("b", {}, ...inline(m[2])));
+    else if (m[3] != null) out.push(el("a", { href: m[4], target: "_blank", rel: "noopener noreferrer" }, m[3]));
+    else if (m[5] != null) out.push(el("a", { href: m[5], target: "_blank", rel: "noopener noreferrer" }, siteOf(m[5]) + " ↗"));
+    else out.push(el("i", {}, m[6]));
+    last = m.index + m[0].length;
+  }
+  out.push(text.slice(last));
+  return out;
+}
+
+function markdown(text) {
+  const lines = text.replace(/\r/g, "").split("\n"), out = [];
+  const cells = (l) => l.trim().replace(/^\|/, "").replace(/(?<!\\)\|$/, "").split(/(?<!\\)\|/).map((c) => c.trim().replace(/\\\|/g, "|"));
+  const LIST = /^(\s*)([-*+]|\d+[.)])\s+(.*)$/;
+  const starts = (t) => /^(#{1,6}\s|```|>|\|)/.test(t) || LIST.test(t) || /^(-{3,}|\*{3,})$/.test(t);
+  let i = 0;
+  if (lines[0] === "---") {  // frontmatter as a small key/value table
+    const end = lines.indexOf("---", 1);
+    if (end > 0) {
+      out.push(el("table", { class: "meta" }, el("tbody", {}, ...lines.slice(1, end).filter((l) => l.includes(":")).map((l) => {
+        const at = l.indexOf(":");
+        return el("tr", {}, el("th", {}, l.slice(0, at).trim()), el("td", {}, ...inline(l.slice(at + 1).trim())));
+      }))));
+      i = end + 1;
+    }
+  }
+  while (i < lines.length) {
+    const t = lines[i].trim();
+    if (!t) { i++; continue; }
+    if (t.startsWith("```")) {
+      const buf = [];
+      for (i++; i < lines.length && !lines[i].trim().startsWith("```"); i++) buf.push(lines[i]);
+      i++; out.push(el("pre", {}, buf.join("\n"))); continue;
+    }
+    const h = t.match(/^(#{1,6})\s+(.*)$/);
+    if (h) { out.push(el("h" + Math.min(h[1].length, 4), {}, ...inline(h[2]))); i++; continue; }
+    if (/^(-{3,}|\*{3,})$/.test(t)) { out.push(el("hr")); i++; continue; }
+    if (t.startsWith("|") && i + 1 < lines.length && isSep(lines[i + 1])) {
+      const head = cells(t), rows = [];
+      for (i += 2; i < lines.length && lines[i].trim().startsWith("|"); i++) rows.push(cells(lines[i]));
+      out.push(el("div", { class: "tablewrap" }, el("table", {},
+        el("thead", {}, el("tr", {}, ...head.map((c) => el("th", {}, ...inline(c))))),
+        el("tbody", {}, ...rows.map((r) => el("tr", {}, ...r.map((c) => el("td", {}, ...inline(c)))))))));
+      continue;
+    }
+    if (t.startsWith(">")) {
+      const buf = [];
+      for (; i < lines.length && lines[i].trim().startsWith(">"); i++) buf.push(lines[i].trim().replace(/^>\s?/, ""));
+      out.push(el("blockquote", {}, ...inline(buf.join(" ")))); continue;
+    }
+    if (LIST.test(lines[i])) {
+      const ordered = /^\s*\d/.test(lines[i]), list = el(ordered ? "ol" : "ul");
+      for (; i < lines.length && lines[i].trim(); i++) {
+        const m = lines[i].match(LIST);
+        if (!m) { if (list.lastChild) list.lastChild.append(" ", ...inline(lines[i].trim())); continue; }  // wrapped line
+        const item = m[3].replace(/^\[ \]\s*/, "☐ ").replace(/^\[[xX]\]\s*/, "☑ ");
+        const li = el("li", {}, ...inline(item));
+        if (m[1].length >= 2) li.style.marginLeft = `${Math.floor(m[1].length / 2) * 18}px`;
+        list.append(li);
+      }
+      out.push(list); continue;
+    }
+    const buf = [];
+    for (; i < lines.length && lines[i].trim() && !(buf.length && starts(lines[i].trim())); i++) buf.push(lines[i].trim());
+    out.push(el("p", {}, ...inline(buf.join(" "))));
+  }
+  return out;
+}
+const isSep = (l) => { const s = l.trim(); return s.includes("-") && /^[|:\-\s]+$/.test(s); };
+
+// ---------------------------------------------------------------- Claude menu
+const COMMANDS = [
+  ["find-jobs", "Find jobs", "Run the saved searches and update the shortlist", "Focus (optional), e.g. quant"],
+  ["apply", "Apply", "Tailored CV and cover letter for one posting", "Link to the posting", true],
+  ["save-job", "Save a job", "Add a posting you found to the shortlist", "Link to the posting", true],
+  ["interview", "Interview", "10–15 minutes that deepen your profile", "Topic (optional)"],
+  ["ingest", "Ingest a source", "Add a repo, CV, transcript or report to your profile", "Path to the file or folder", true],
+];
+function buildMenu() {
+  $("menu").replaceChildren(el("p", {}, "Each command opens Claude Code in a new terminal window."),
+    ...COMMANDS.map(([skill, label, about, hint, required]) => {
+      const input = el("input", { placeholder: hint, ariaLabel: hint, required: !!required });
+      return el("form", { onsubmit: (e) => {
+          e.preventDefault(); toggleMenu(false); runSkill(skill, input.value.trim()); input.value = ""; } },
+        el("b", {}, label), el("small", {}, about),
+        el("div", { class: "inline" }, input, el("button", { type: "submit", class: "btn-primary" }, "Run")));
+    }));
+}
+function toggleMenu(open = $("menu").hidden) {
+  const m = $("menu");
+  m.hidden = !open;
+  if (!open) return;
+  const r = $("cmds").getBoundingClientRect();
+  m.style.top = `${r.bottom + 8}px`;
+  m.style.right = `${Math.max(12, innerWidth - r.right)}px`;
+  m.querySelector("input").focus();
 }
 
 // ---------------------------------------------------------------- drawer
@@ -948,7 +1310,11 @@ function field(name, i, value) {
       el("button", { type: "button", class: "btn-ghost", onclick: () => {
         const v = input.value.trim();
         if (isUrl(v)) window.open(v, "_blank", "noopener"); else toast("Not a web link", true);
-      } }, "Open")));
+      } }, "Open"),
+      state.sheet === "jobs" ? el("button", { type: "button", class: "btn-ghost", title: "Start /apply in Claude Code", onclick: () => {
+        const v = input.value.trim();
+        if (isUrl(v)) runSkill("apply", v); else toast("Not a web link", true);
+      } }, "/apply") : null));
   } else if (k === "track") {
     input = el("input", { id, value });
     input.setAttribute("list", "trackList");
@@ -994,22 +1360,34 @@ $("tabs").addEventListener("click", (e) => { if (e.target.dataset.sheet) switchS
 $("reload").addEventListener("click", () => refresh());
 $("bell").addEventListener("click", () => switchSheet("jobs"));
 $("add").addEventListener("click", () => openDrawer(null));
+$("findJobs").addEventListener("click", () => runSkill("find-jobs"));
 $("save").addEventListener("click", saveDrawer);
 $("cancel").addEventListener("click", closeDrawer);
 $("delete").addEventListener("click", deleteRow);
-$("overlay").addEventListener("click", closeDrawer);
+$("overlay").addEventListener("click", () => { closeDrawer(); closeViewer(); });
 $("form").addEventListener("submit", (e) => { e.preventDefault(); saveDrawer(); });
-window.addEventListener("hashchange", () => switchSheet(location.hash.slice(1)));
+$("cmds").addEventListener("click", () => toggleMenu());
+$("cvs").addEventListener("click", openCvs);
+document.addEventListener("click", (e) => {
+  if (!$("menu").hidden && !$("menu").contains(e.target) && !$("cmds").contains(e.target)) toggleMenu(false);
+});
+buildMenu();
+window.addEventListener("hashchange", () => { closeViewer(); switchSheet(location.hash.slice(1)); });
 document.addEventListener("keydown", (e) => {
-  const open = !$("drawer").hidden;
-  if (e.key === "Escape" && open) closeDrawer();
+  const open = !$("drawer").hidden, viewing = !$("viewer").hidden;
+  if (e.key === "Escape" && !$("menu").hidden) toggleMenu(false);
+  else if (e.key === "Escape" && open) closeDrawer();
+  else if (e.key === "Escape" && viewing) closeViewer();
   else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s" && open) { e.preventDefault(); saveDrawer(); }
-  else if (e.key === "/" && !open && !/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)) {
+  else if (e.key === "/" && !open && !viewing && !/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)) {
     e.preventDefault(); $("search").focus();
   }
 });
-// pick up edits Claude made to the files while the tab was in the background
-window.addEventListener("focus", () => { if ($("drawer").hidden && state.data) refresh(true); });
+// pick up edits Claude made to the files (and PDFs it rebuilt) while the tab was in the background
+window.addEventListener("focus", () => {
+  if (!$("viewer").hidden) reloadViewer();
+  if ($("drawer").hidden && state.data) refresh(true);
+});
 switchSheet(SHEETS[location.hash.slice(1)] ? location.hash.slice(1) : "tracker");
 </script>
 </body>

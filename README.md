@@ -105,6 +105,12 @@ python scripts/build_index.py --find "SQL" "PLC"     # which facts match a phras
 python scripts/build_pdf.py applications/<folder>/cv.tex
 python scripts/tracker.py                           # dashboard in the browser: applications + job shortlist tabs
                                                     # (photo backdrop: save one as personal/dashboard-bg.jpg)
+                                                    # Click an application to read its CV, letter, posting and
+                                                    # evidence, rebuild the PDFs, or run /sync, /interview-prep.
+                                                    # "CVs" lists every application to flip through its
+                                                    # tailored CV and cover letter.
+                                                    # The >_ menu (and "Find jobs", "/apply" on the shortlist)
+                                                    # opens Claude Code in a new terminal window with the command
 python scripts/find_jobs.py                         # run the searches in jobs/searches.md, list new postings
 python scripts/find_jobs.py --show <url>             # read a FINN, LinkedIn or NAV posting in full
 ```
@@ -118,7 +124,8 @@ useful for deciding what to learn or build next.
 
 ## Typical workflow
 
-1. Run `/find-jobs` (or find a posting yourself) → `/apply` with the text or link.
+1. Run `/find-jobs` (or find a posting yourself) → `/apply` with the text or link. Both can also be
+   started from the dashboard's Job shortlist tab.
 2. Answer Claude's questions about gaps. Answers are saved to your profile.
 3. Review `evidence.md`, the CV and the letter in the application folder. Give feedback or edit the `.tex`.
 4. `/sync` so Claude learns from your edits.

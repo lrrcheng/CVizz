@@ -4,6 +4,12 @@ Usage: python scripts/tracker.py [--port 8765] [--no-browser] [--background phot
 Two tabs: Applications (tracker.md) and Job shortlist (jobs/shortlist.md, written by /find-jobs).
 The page itself is scripts/tracker.html. For a photo behind the glass, pass --background or save one as
 personal/dashboard-bg.jpg (or .png/.webp); without one, a soft gradient is used.
+Clicking an application opens its folder in a viewer: the CV and cover letter PDFs, the posting, evidence and
+other notes, with buttons to rebuild the PDFs and to run /sync or /interview-prep on it. "CVs" lists every
+application and shows its tailored CV and cover letter, to flip through them.
+The page also starts Claude Code: the Claude menu (find jobs, apply, save a job, interview, ingest), "Find jobs"
+on the shortlist and each posting's "/apply". Each opens a new terminal window, interactive because the
+skills ask questions.
 The files stay the source of truth, so Claude and the skills keep editing them as before. Every save
 rewrites only the markdown table; text above and below it is kept. An edit is applied to the row as
 it was when you opened it, on top of the latest file, so changes Claude made in the meantime survive.
@@ -16,6 +22,8 @@ import json
 import os
 import re
 import secrets
+import shlex
+import shutil
 import subprocess
 import sys
 import webbrowser
@@ -24,15 +32,25 @@ from pathlib import Path
 from urllib.parse import parse_qs, urlsplit
 
 ROOT = Path(__file__).resolve().parent.parent
+APPS = ROOT / "applications"
 TRACKER = ROOT / "tracker.md"
 SHEETS = {"tracker": TRACKER, "jobs": ROOT / "jobs" / "shortlist.md"}
 DEFAULT_STATUSES = {"tracker": ["drafted", "sent", "interview", "offer", "rejected", "no-reply"],
                     "jobs": ["new", "apply", "skip", "applied"]}
 OPENABLE = {".pdf", ".tex", ".md", ".txt", ".docx"}  # never hand executables to the OS
 IMAGE_TYPES = {".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".png": "image/png", ".webp": "image/webp"}
+VIEWABLE = {".pdf": "application/pdf", ".md": "text/plain; charset=utf-8", ".txt": "text/plain; charset=utf-8"}
+DOC_ORDER = ["cv.pdf", "cover-letter.pdf", "posting.md", "evidence.md", "questions.md", "application-questions.md",
+             "cover-letter.txt", "cover-letter-short.txt", "interview-prep.md", "outcome.md"]
+BUILT = ["cv", "cover-letter"]  # the .tex files "Rebuild PDFs" compiles
 PAGE = (Path(__file__).resolve().parent / "tracker.html").read_text(encoding="utf-8")
 TOKEN = secrets.token_urlsafe(16)
 PIPE = re.compile(r"(?<!\\)\|")
+# Links /apply may be started with. No spaces, quotes or shell metacharacters, so the prompt is safe even
+# where `claude` is a .cmd shim that cmd.exe parses; a link with & or % falls back to copying.
+SAFE_URL = re.compile(r"https?://[A-Za-z0-9._~:/?#=+@,;*$'()\[\]-]+")
+SAFE_TEXT = re.compile(r"[\w ,.'()-]{0,80}")  # a focus or topic
+SAFE_PATH = re.compile(r"[\w :\\/.,'()+-]{1,260}")
 
 
 # ---------------------------------------------------------------------------
@@ -192,6 +210,109 @@ def open_path(value):
     return 200, {"ok": True}
 
 
+def rel(path):
+    return path.relative_to(ROOT).as_posix()
+
+
+def app_folder(value):
+    """An application folder inside applications/, or None."""
+    path = openable(str(value))
+    return path if path and path.is_dir() and path.parent == APPS else None
+
+
+def sources(folder):
+    """The .tex files "Rebuild PDFs" compiles: an application folder's CV and letter."""
+    if folder is None or not folder.is_dir() or folder.parent != APPS:
+        return []
+    return [folder / f"{s}.tex" for s in BUILT if (folder / f"{s}.tex").exists()]
+
+
+def documents(value):
+    """What an application row points to: a folder's PDFs and notes (CV and letter first), or a single file."""
+    path = openable(str(value))
+    if path is None:
+        return 404, {"error": f"not found in this folder: {value}"}
+    order = {name: i for i, name in enumerate(DOC_ORDER)}
+    files = [p for p in path.iterdir() if p.is_file()] if path.is_dir() else [path]
+    files = sorted((p for p in files if p.suffix.lower() in VIEWABLE), key=lambda p: (order.get(p.name, len(order)), p.name))
+    docs = []
+    for p in files:
+        tex = p.with_suffix(".tex")
+        stale = p.suffix.lower() == ".pdf" and tex.exists() and tex.stat().st_mtime > p.stat().st_mtime
+        docs.append({"name": p.name, "path": rel(p), "kind": "pdf" if p.suffix.lower() == ".pdf" else "text",
+                     "modified": int(p.stat().st_mtime), "stale": stale})
+    texs = sources(path)
+    for i, tex in enumerate(texs):  # a .tex that was never built still gets a tab, so it can be built from there
+        if not tex.with_suffix(".pdf").exists():
+            docs.insert(i, {"name": tex.with_suffix(".pdf").name, "path": "", "kind": "pdf", "missing": True})
+    return 200, {"path": rel(path), "folder": rel(path) if path.is_dir() else "", "docs": docs,
+                 "application": app_folder(value) is not None, "buildable": bool(texs)}
+
+
+def read_file(value):
+    path = openable(str(value))
+    if path is None or not path.is_file() or path.suffix.lower() not in VIEWABLE:
+        return None
+    return path
+
+
+def build_pdfs(body):
+    texs = [str(t) for t in sources(openable(str(body.get("path", ""))))]
+    if not texs:
+        return 400, {"error": "nothing to build here"}
+    result = subprocess.run([sys.executable, str(ROOT / "scripts" / "build_pdf.py"), *texs], cwd=ROOT,
+                            capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=600)
+    if result.returncode == 0:  # latexmk skips a .tex whose content didn't change; its PDF is current all the same
+        for tex in map(Path, texs):
+            if tex.with_suffix(".pdf").exists():
+                tex.with_suffix(".pdf").touch()
+    return 200, {"ok": result.returncode == 0, "output": (result.stdout + result.stderr).strip()[-4000:]}
+
+
+# What each skill takes from the page: an optional focus/topic, a posting link, a local path, or an application folder.
+SKILLS = {"find-jobs": "text", "interview": "text", "apply": "url", "save-job": "url", "ingest": "path",
+          "sync": "folder", "interview-prep": "folder"}
+
+
+def skill_arg(kind, value):
+    if kind == "text":
+        return value if SAFE_TEXT.fullmatch(value) else None
+    if kind == "url":
+        return value if SAFE_URL.fullmatch(value) else None
+    if kind == "path":
+        return value if SAFE_PATH.fullmatch(value) else None
+    folder = app_folder(value)
+    return rel(folder) if folder else None
+
+
+def run_skill(body):
+    """Open an interactive Claude Code session in a new terminal window, starting with one of SKILLS."""
+    skill, value = body.get("skill"), str(body.get("arg", "")).strip()
+    if skill not in SKILLS:
+        return 400, {"error": f"unknown skill: {skill}"}
+    arg = skill_arg(SKILLS[skill], value)
+    if arg is None:
+        return 400, {"error": f"Can't start /{skill} with that from the page"}
+    prompt = f"/{skill} {arg}".strip()
+    claude = shutil.which("claude")
+    if not claude:
+        return 404, {"error": "Claude Code (claude) isn't on PATH"}
+    if sys.platform == "win32":
+        subprocess.Popen([claude, prompt], cwd=ROOT, creationflags=subprocess.CREATE_NEW_CONSOLE)
+    elif sys.platform == "darwin":
+        cmd = f"cd {shlex.quote(str(ROOT))} && {shlex.quote(claude)} {shlex.quote(prompt)}"
+        script = cmd.replace("\\", "\\\\").replace('"', '\\"')
+        subprocess.Popen(["osascript", "-e", f'tell application "Terminal" to do script "{script}"',
+                          "-e", 'tell application "Terminal" to activate'])
+    else:
+        terms = [("gnome-terminal", ["--"]), ("konsole", ["-e"]), ("x-terminal-emulator", ["-e"]), ("xterm", ["-e"])]
+        term = next(((t, flag) for t, flag in terms if shutil.which(t)), None)
+        if not term:
+            return 404, {"error": "No terminal emulator found"}
+        subprocess.Popen([term[0], *term[1], claude, prompt], cwd=ROOT)
+    return 200, {"ok": True, "prompt": prompt}
+
+
 # ---------------------------------------------------------------------------
 # Server
 # ---------------------------------------------------------------------------
@@ -230,6 +351,18 @@ class Handler(BaseHTTPRequestHandler):
                 if sheet not in SHEETS:
                     return self.reply(400, {"error": f"unknown sheet: {sheet}"})
                 return self.reply(200, load(sheet))
+            # Personal files: the token is required here too (passed in the query, since iframes can't send headers)
+            query = parse_qs(url.query)
+            if url.path in ("/api/docs", "/api/file"):
+                if query.get("token", [""])[0] != TOKEN:
+                    return self.reply(403, {"error": "forbidden"})
+                value = query.get("path", [""])[0]
+                if url.path == "/api/docs":
+                    return self.reply(*documents(value))
+                path = read_file(value)
+                if path is None:
+                    return self.reply(404, {"error": f"can't show {value}"})
+                return self.reply(200, path.read_bytes(), VIEWABLE[path.suffix.lower()])
             self.reply(404, {"error": "not found"})
         except Exception as e:
             self.reply(500, {"error": str(e)})
@@ -243,6 +376,10 @@ class Handler(BaseHTTPRequestHandler):
                 return self.reply(*save(body))
             if self.path == "/api/open":
                 return self.reply(*open_path(body.get("path", "")))
+            if self.path == "/api/run":
+                return self.reply(*run_skill(body))
+            if self.path == "/api/build":
+                return self.reply(*build_pdfs(body))
             self.reply(404, {"error": "not found"})
         except Exception as e:
             self.reply(500, {"error": str(e)})
